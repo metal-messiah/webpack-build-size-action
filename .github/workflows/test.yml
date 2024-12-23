@@ -1,0 +1,49 @@
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  report-build-size:
+    runs-on: ubuntu-latest
+    name: Report Build Size from Webpack stats
+    steps:
+      # To use this repository's private action,
+      # you must check out the repository
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get stats files
+        id: get-stats
+        run: |
+          rum=$(curl -s https://js-agent.newrelic.com/dev/nr-rum-standard.stats.json); echo "rum=$rum" >> $GITHUB_OUTPUT;
+          standard=$(curl -s https://js-agent.newrelic.com/dev/nr-full-standard.stats.json); echo "standard=$standard" >> $GITHUB_OUTPUT;
+      - name: Capture RUM Bundle Size
+        uses: ./ # Uses an action in the root directory
+        id: rum-bundle-size
+        with:
+          nr-api-key: ${{ secrets.NR_API_KEY }}
+          nr-account-id: '550352'
+          nr-env: 'staging'
+          analysis-type: 'webpack'
+          analysis-file-contents: ${{steps.get-stats.outputs.rum}}
+          file-name-filter: '.min.js'
+      - name: Capture PRO Bundle Size
+        uses: ./ # Uses an action in the root directory
+        id: pro-bundle-size
+        with:
+          nr-api-key: ${{ secrets.NR_API_KEY }}
+          nr-account-id: '550352'
+          nr-env: 'staging'
+          analysis-type: 'webpack'
+          analysis-file-contents: ${{steps.get-stats.outputs.standard}}
+          file-name-filter: '.min.js'
+      - name: Capture SPA Bundle Size
+        uses: ./ # Uses an action in the root directory
+        id: spa-bundle-size
+        with:
+          nr-api-key: ${{ secrets.NR_API_KEY }}
+          nr-account-id: '550352'
+          nr-env: 'staging'
+          analysis-type: 'webpack'
+          analysis-file-url: https://js-agent.newrelic.com/dev/nr-spa-standard.stats.json
+          file-name-filter: '.min.js'
+          traverse: true

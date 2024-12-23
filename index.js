@@ -1,27 +1,19 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
+const core = require('@actions/core')
+const { getFileContentsAsJson, createEvents, reportEvents } = require('./utils.js')
 
-try {
+execute() 
 
-    const analysisFile = core.getInput('analysis-file');
-    const nrApiKey = core.getInput('nr-api-key');
-    const nrAccountId = core.getInput('nr-account-id');
-    const traverse = require('traverse');
-
-    console.log(`Analysis file: ${analysisFile}`);
-    console.log(`New Relic API key: ${nrApiKey}`);
-    console.log(`New Relic account ID: ${nrAccountId}`);
-    console.log(`traverse: ${traverse}`);   
-
-
-//   // `who-to-greet` input defined in action metadata file
-//   const nameToGreet = core.getInput('analysis-file');
-//   console.log(`Hello ${nameToGreet}!`);
-//   const time = (new Date()).toTimeString();
-//   core.setOutput("time", time);
-//   // Get the JSON webhook payload for the event that triggered the workflow
-//   const payload = JSON.stringify(github.context.payload, undefined, 2)
-//   console.log(`The event payload: ${payload}`);
-} catch (error) {
-  core.setFailed(error.message);
+async function execute(){
+    try {
+        const analysisFileContentsJson = await getFileContentsAsJson()
+        const sent = await reportEvents(createEvents(analysisFileContentsJson))
+        if (sent?.success) {
+            console.log(`Results uploaded to New Relic - ${sent.uuid}`)
+            console.log(`Query your data like "SELECT * FROM ${core.getInput('event-type')}" under the provided New Relic account`)
+            core.setOutput('nr-response', JSON.stringify(sent))
+        }
+        else core.setFailed('Failed to upload results to New Relic')
+    } catch (error) {
+        core.setFailed(error.message);
+    }
 }

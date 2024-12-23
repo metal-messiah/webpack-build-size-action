@@ -1,0 +1,1 @@
+Created from this [reference flow chart](https://whimsical.com/new-relic-track-webpack-stats-9L1k1AeJfFhFDLg3wufkQZ)
