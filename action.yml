@@ -1,0 +1,26 @@
+name: 'New Relic Capture Web Bundle Size'
+description: 'Capture Build Size To New Relic From Bundle Analyzers'
+inputs:
+  analysis-file:
+    description: 'Build analysis file'
+    required: true
+  nr-api-key:
+    description: 'NR API key to be used to capture events'
+    required: true
+  nr-account-id:
+    description: 'NR Account ID to be used to capture events'
+    required: true
+  traverse:
+    description: 'When true, will traverse all subtrees and capture events for each item'
+    default: false
+    required: false
+outputs:
+  api-response:
+    description: 'The response from NR API'
+runs:
+  using: 'node20'
+  main: 'index.js -- \
+    --version ${{ github.ref_name }} \
+    --commit ${{ github.sha }} \
+    --user ${{ github.actor }}
+  '
