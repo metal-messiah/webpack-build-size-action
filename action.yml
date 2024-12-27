@@ -1,5 +1,8 @@
-name: 'New Relic Capture Web Bundle Size'
-description: 'Capture Build Size To New Relic From Bundle Analyzers'
+name: 'New Relic Capture Bundle Size'
+description: 'Capture Bundle Size Stats To New Relic'
+branding:
+  icon: 'upload-cloud'
+  color: 'green'
 inputs:
   analysis-file-contents:
     description: 'Build analysis file contents -- Takes precendence over analysis-file-url when both are supplied.'
@@ -20,7 +23,7 @@ inputs:
     default: '${{ github.sha }}'
   event-type:
     description: 'Type of event to be captured - defaults to BundleSize'
-    required: true
+    required: false
     default: 'BundleSize'
   file-name-filter:
     description: 'Only include file names that include this string - defaults to include everything'
@@ -42,7 +45,7 @@ inputs:
     required: true
   nr-env:
     description: 'NR Environment to be used to capture events'
-    required: true
+    required: false
     default: 'US'
     options:
     - 'staging'

@@ -1,10 +1,11 @@
 const core = require('@actions/core')
-const { getFileContentsAsJson, createEvents, reportEvents } = require('./utils.js')
+const { checkRequiredInputs, getFileContentsAsJson, createEvents, reportEvents } = require('./utils.js')
 
 execute() 
 
 async function execute(){
     try {
+        checkRequiredInputs()
         const analysisFileContentsJson = await getFileContentsAsJson()
         const sent = await reportEvents(createEvents(analysisFileContentsJson))
         if (sent?.success) {

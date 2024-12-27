@@ -74,7 +74,15 @@ async function reportEvents(objectsToReport) {
             .then((r) => r.json())
 }
 
+function checkRequiredInputs(){
+    if (core.getInput('analysis-type') === 'webpack' && !(core.getInput('analysis-file-contents') || core.getInput('analysis-file-url'))) throw new Error('Missing required input: analysis-file-contents or analysis-file-url') 
+    if (core.getInput('analysis-type') === 'manual' && !(core.getInput('manual-analysis-file-name') && (core.getInput('manual-analysis-file-size') || core.getInput('manual-analysis-gzip-size')))) throw new Error('Missing required input: manual-analysis-file-name, manual-analysis-file-size or manual-analysis-gzip-size')
+    if (!core.getInput('nr-account-id')) throw new Error('Missing required input: nr-account-id')
+    if (!core.getInput('nr-api-key')) throw new Error('Missing required input: nr-api-key')
+}
+
 module.exports = {
+    checkRequiredInputs,
     getFileContentsAsJson,
     createEvents,
     reportEvents
