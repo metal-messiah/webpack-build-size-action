@@ -25745,7 +25745,15 @@ async function reportEvents(objectsToReport) {
             .then((r) => r.json())
 }
 
+function checkRequiredInputs(){
+    if (core.getInput('analysis-type') === 'webpack' && !(core.getInput('analysis-file-contents') || core.getInput('analysis-file-url'))) throw new Error('Missing required input: analysis-file-contents or analysis-file-url') 
+    if (core.getInput('analysis-type') === 'manual' && !(core.getInput('manual-analysis-file-name') && (core.getInput('manual-analysis-file-size') || core.getInput('manual-analysis-gzip-size')))) throw new Error('Missing required input: manual-analysis-file-name, manual-analysis-file-size or manual-analysis-gzip-size')
+    if (!core.getInput('nr-account-id')) throw new Error('Missing required input: nr-account-id')
+    if (!core.getInput('nr-api-key')) throw new Error('Missing required input: nr-api-key')
+}
+
 module.exports = {
+    checkRequiredInputs,
     getFileContentsAsJson,
     createEvents,
     reportEvents
@@ -27658,12 +27666,13 @@ module.exports = parseParams
 /************************************************************************/
 var __webpack_exports__ = {};
 const core = __nccwpck_require__(7484)
-const { getFileContentsAsJson, createEvents, reportEvents } = __nccwpck_require__(4561)
+const { checkRequiredInputs, getFileContentsAsJson, createEvents, reportEvents } = __nccwpck_require__(4561)
 
 execute() 
 
 async function execute(){
     try {
+        checkRequiredInputs()
         const analysisFileContentsJson = await getFileContentsAsJson()
         const sent = await reportEvents(createEvents(analysisFileContentsJson))
         if (sent?.success) {
