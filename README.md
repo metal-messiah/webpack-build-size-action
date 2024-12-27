@@ -1,8 +1,8 @@
 [![Community Project header](https://github.com/newrelic/open-source-office/raw/master/examples/categories/images/Community_Project.png)](https://github.com/newrelic/open-source-office/blob/master/examples/categories/index.md#category-community-project)
 
-# New Relic Capture Bundle Size 
+# New Relic Capture Build Size 
 
-[![GitHub Marketplace version](https://img.shields.io/github/release/newrelic/capture-bundle-size.svg?label=Marketplace&logo=github)](https://github.com/marketplace/actions/new-relic-capture-build-size)
+[![GitHub Marketplace version](https://img.shields.io/github/release/newrelic/capture-build-size.svg?label=Marketplace&logo=github)](https://github.com/marketplace/actions/new-relic-capture--size)
 
 A GitHub Action to capture a New Relic event describing your build size metrics.
 
@@ -15,7 +15,7 @@ A GitHub Action to capture a New Relic event describing your build size metrics.
 | `analysis-file-url` | **If `analysis-type` is not `manual` and no `analysis-file-contents` values are supplied**  | - | Public URL to the analysis file - When supplied without the analysis-file-contents, the action will fetch the file contents from the URL. It will decorate all events created with a link to the uploaded asset. |
 | `analysis-type` | **If using `manual-*` values, must be `manual` | `webpack` | Type of analysis file to parse. Please note: `webpack` assumes the file supplied was generated using [webpack-bundle-analyzer](https://www.npmjs.com/package/webpack-bundle-analyzer)|
 | `commit` | - | `github.sha` | Commit identifier of the build |
-| `event-type` | - | `BundleSize` | Type of event to be captured |
+| `event-type` | - | `BuildSize` | Type of event to be captured |
 | `file-name-filter` | - | - | When supplied, will only include **entrypoint** file names that include the given substring - When undefined, will include everything in the analysis file |
 | `manual-analysis-file-name` | **If `analysis-type` is `manual`** | - | Manually supply the file name of your build - Takes precendence over analysis-file-contents and analysis-file-url when supplied. Only works if analysis-type is "manual" |
 | `manual-analysis-file-size` | **If `analysis-type` is `manual`** | - | Manually supply the file name of your build - Takes precendence over analysis-file-contents and analysis-file-url when supplied. Only works if analysis-type is "manual" |
@@ -24,8 +24,8 @@ A GitHub Action to capture a New Relic event describing your build size metrics.
 | `nr-api-key` | **Always** | - | New Relic API key to be used to capture events |
 | `nr-env` | - | `US` | NR Environment to be used to capture events. Valid values are `US`, `staging`.  `EU` to be supported in the future |
 | `traverse` | - | `false` | When true, will traverse all subtrees and capture events for each item. Currently only supports `webpack` analysis type. |
-| `trigger` | - | `build` | Trigger of the capturing the bundle size. Can be useful if you have differing reasons for capturing the bundle size across your repository. |
-| `user` | - | `github.actor` | User who triggered the build |differing reasons for capturing the bundle size across your repository. |
+| `trigger` | - | `build` | Trigger of the capturing the build size. Can be useful if you have differing reasons for capturing the build size across your repository. |
+| `user` | - | `github.actor` | User who triggered the build |
 | `version` | - | `github.ref_name` | Version of the build |
 
 
@@ -41,7 +41,7 @@ A GitHub Action to capture a New Relic event describing your build size metrics.
 ### Minimum required fields - analysis-file-url
 
 ```yaml
-name: Capture Bundle Size With New Relic
+name: Capture Build Size With New Relic
 on:
   workflow_dispatch:
   push:
@@ -53,9 +53,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      # This step parses the bundle stats (URL) and creates NR events
-      - name: Capture Bundle Size
-        uses: newrelic/capture-bundle-size@v1.0.0
+      # This step parses the build stats (URL) and creates NR events
+      - name: Capture Build Size
+        uses: newrelic/capture-build-size@v1.0.0
         with:
           analysis-file-url: https://foo.bar/mybuild.stats.json
           nr-account-id: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
@@ -65,7 +65,7 @@ jobs:
 ### Minimum required fields - analysis-file-contents
 
 ```yaml
-name: Capture Bundle Size With New Relic
+name: Capture Build Size With New Relic
 on:
   workflow_dispatch:
   push:
@@ -86,9 +86,9 @@ jobs:
         shell: bash
         run: |
             stats=$(cat ./build/mybuild.stats.json); echo "stats=$stats" >> $GITHUB_OUTPUT;
-      # This step parses the bundle stats (file) and creates NR events
-      - name: Capture Bundle Size
-        uses: newrelic/capture-bundle-size@v1.0.0
+      # This step parses the Build stats (file) and creates NR events
+      - name: Capture Build Size
+        uses: newrelic/capture-build-size@v1.0.0
         with:
           analysis-file-contents: ${{ steps.get-stats.output.stats }}
           nr-account-id: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}
@@ -97,7 +97,7 @@ jobs:
 
 ### Minimum required fields - manual-*
 ```yaml
-name: Capture Bundle Size With New Relic
+name: Capture Build Size With New Relic
 on:
   workflow_dispatch:
   push:
@@ -112,20 +112,20 @@ jobs:
       # This step builds the code
       - name: Build 
         run: npm run build
-      # This step parses the bundle stats (file) and creates NR events
-      - name: Capture Bundle Size
-        uses: newrelic/capture-bundle-size@v1.0.0
+      # This step parses the Build stats (file) and creates NR events
+      - name: Capture Build Size
+        uses: newrelic/capture-build-size@v1.0.0
         with:
           analysis-type: 'manual'
-          manual-analysis-file-name: 'main-bundle' # the file name to report
+          manual-analysis-file-name: 'main-Build' # the file name to report
           manual-analysis-file-size: 12345 # Some value calculated manually
-          nr-account-id: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}in your build steps that does not rely on an explicit analysis file like webpack-bundle-analyzer 
+          nr-account-id: ${{ secrets.NEW_RELIC_ACCOUNT_ID }}in your build steps that does not rely on an explicit analysis file like webpack-build-analyzer 
           nr-api-key: ${{ secrets.NEW_RELIC_API_KEY }}
 ```
 
 ### All input fields example - analysis-file-url
 ```yaml
-name: Capture Bundle Size With New Relic
+name: Capture Build Size With New Relic
 on:
   pull_request: # run on pull request sync events
 
@@ -136,9 +136,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      # This step parses the bundle stats (URL) and creates NR events
-      - name: Capture Bundle Size
-        uses: newrelic/capture-bundle-size@v1.0.0
+      # This step parses the Build stats (URL) and creates NR events
+      - name: Capture Build Size
+        uses: newrelic/capture-build-size@v1.0.0
         with:
           analysis-file-url: https://foo.bar/mybuild.stats.json # the webpack stats file URL
           analysis-type: 'webpack' # parse a webpack stats file
