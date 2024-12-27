@@ -13,6 +13,7 @@ inputs:
     default: 'webpack'
     options:
     - 'webpack' # could add other types later if demand arises
+    - 'manual'
   commit:
     description: 'Commit identifier of the build - defaults to the sha of the commit that triggered the build'
     required: false
@@ -23,6 +24,15 @@ inputs:
     default: 'BundleSize'
   file-name-filter:
     description: 'Only include file names that include this string - defaults to include everything'
+    required: false
+  manual-analysis-file-name: 
+    description: 'Manually supply the file name of your build - Takes precendence over analysis-file-contents and analysis-file-url when supplied. Only works if analysis-type is "manual"'
+    required: false
+  manual-analysis-file-size: 
+    description: 'Manually supply the size of your build - Takes precendence over analysis-file-contents and analysis-file-url when supplied. Only works if analysis-type is "manual"'
+    required: false
+  manual-analysis-gzip-size: 
+    description: 'Manually supply the gzip size of your build - Takes precendence over analysis-file-contents and analysis-file-url when supplied. Only works if analysis-type is "manual"'
     required: false
   nr-account-id:
     description: 'NR Account ID to be used to capture events'
@@ -42,6 +52,10 @@ inputs:
     description: 'When true, will traverse all subtrees and capture events for each item - defaults to false'
     default: false
     required: false
+  trigger:
+    description: 'Trigger of the capturing the bundle size - defaults to "build". Can be useful if you have differing reasons for capturing the bundle size across your repository.'
+    required: false
+    default: 'build'
   user:
     description: 'User who triggered the build - defaults to the github actor property'
     required: false

@@ -1,24 +1,32 @@
 const core = require('@actions/core')
 const BuildSizeEvent = require('./BuildSizeEvent')
 
+const manualAnalysisFileName = core.getInput('manual-analysis-file-name')
+const manualAnalysisFileSize = core.getInput('manual-analysis-file-size')
+const manualAnalysisGzipSize = core.getInput('manual-analysis-gzip-size')
+
 const analysisFileUrl = core.getInput('analysis-file-url')
 const analysisFileContents = core.getInput('analysis-file-contents')
+const analysisType = core.getInput('analysis-type')
 
 async function getFileContentsAsJson() {
-    if (analysisFileContents) {
+    if (analysisType === 'manual' && !!manualAnalysisFileName && !!(!!manualAnalysisFileSize || !!manualAnalysisGzipSize)) {
+        console.log('Using manual analysis values')
+        return [{ label: manualAnalysisFileName, parsedSize: manualAnalysisFileSize, gzipSize: manualAnalysisGzipSize }]
+    } else if (analysisFileContents) {
         console.log("Using analysis file contents")
         return JSON.parse(analysisFileContents)
     } else if (analysisFileUrl) {
         console.log('Fetching analysis file from', analysisFileUrl)
         return await fetch(analysisFileUrl).then((r) => r.json())
-    } else throw new Error('No analysis file provided. Must provide one of "analysis-file-contents" or "analysis-file-url"')
+    } else throw new Error('Could not determine build analysis file source - Check your configurations')
 }
 
 
 function createEvents(analysisFileContentsJson) {
     const objectsToReport = []
 
-    const shouldTraverse = JSON.parse(core.getInput('traverse'))
+    const shouldTraverse = JSON.parse(core.getInput('traverse')) && analysisType === 'webpack'
 
     const fileFilter = core.getInput('file-name-filter')
     const fileFilterFn = (asset) => fileFilter ? asset.label.includes(fileFilter) : true

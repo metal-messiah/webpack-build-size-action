@@ -1,13 +1,13 @@
 const core = require('@actions/core')
 
-const analysisFileUrl = core.getInput('analysis-file-url')
-
 module.exports = class BuildSizeEvent {
     eventType = core.getInput('event-type') // Defaults to 'BuildSize' if not explicitly set
     version = core.getInput('version') // Defaults to the branch ref if not explicitly set
     commit = core.getInput('commit')
     user = core.getInput('user')
-    analysisFileUrl = analysisFileUrl
+    trigger = core.getInput('trigger')
+    analysisType = core.getInput('analysis-type')
+    analysisFileUrl = core.getInput('analysis-file-url')
 
     constructor(asset, entry) {
         this.fileName = asset.label
